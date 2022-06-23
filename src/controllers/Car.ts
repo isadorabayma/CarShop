@@ -8,7 +8,7 @@ class CarController extends Controller<Car> {
 
   constructor(
     service = new CarService(),
-    route = '/car',
+    route = '/cars',
   ) {
     super(service);
     this._route = route;
