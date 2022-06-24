@@ -47,5 +47,58 @@ abstract class Controller<T> {
     req: Request<{ id: string; }>,
     res: Response<T | ResponseError>,
   ): Promise<typeof res>;
+
+  update = async (
+    req: Request<{ id: string, body: T }>,
+    res: Response<T | ResponseError>,
+  ): Promise<typeof res> => {
+    const { body, params: { id } } = req;
+    if (id.length < 24) {
+      return res.status(400).json({ error: this.errors.shortId });
+    }
+    try {
+      if (!body.model) {
+        return res.status(400).json({ error: this.errors.badRequest });
+      } 
+
+      const objUpdated = await this.service.update(id, body);
+      
+      if (objUpdated) return res.status(200).json(objUpdated);
+
+      return res.status(404).json({ error: this.errors.notFound });
+    } catch (error) {
+      return res.status(500).json({ error: this.errors.internal });
+    }
+  };
+
+  delete = async (
+    req: Request<{ id: string }>,
+    res: Response<T | ResponseError>,
+  ): Promise<typeof res> => {
+    const { id } = req.params;
+    try {
+      if (id.length < 24) {
+        return res.status(400).json({ error: this.errors.shortId });
+      }
+      const objDeleted = await this.service.delete(id);
+      if (objDeleted) {
+        return res.status(204).json(objDeleted);
+        // no readme pede para não ter resposta mas não estou conseguindo colocar .end() por conta da tipagem
+      }
+      return res.status(404).json({ error: this.errors.notFound });
+    } catch (error) {
+      return res.status(500).json({ error: this.errors.internal });
+    }
+  };
+
+  // abstract update(
+  //   req: Request<{ id: string, body: T }>,
+  //   res: Response<T | ResponseError>,
+  // ): Promise<typeof res>;
+
+  // abstract delete(
+  //   req: Request<{ id: string }>,
+  //   res: Response<T | ResponseError>,
+  // ): Promise<typeof res>;
 }
 export default Controller;
