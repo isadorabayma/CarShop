@@ -14,14 +14,6 @@ class CarService extends Service<Car> {
     }
     return this.model.create(obj);
   };
-
-  // readOne = async (id: string): Promise<Car | ServiceError | null> => {
-  //   const parsed = carZodSchema.safeParse(id);
-  //   if (!parsed.success) {
-  //     return { error: parsed.error };
-  //   }
-  //   return this.model.readOne(id);
-  // };
 }
 
 export default CarService;

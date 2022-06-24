@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import Controller, {
   RequestWithBody, ResponseError } from '.';
-// RequestWithBody, RequestWithParams, ResponseError } from '.';
 import { Car } from '../interfaces/CarInterface';
 import CarService from '../services/Car';
 

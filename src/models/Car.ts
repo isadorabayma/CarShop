@@ -4,10 +4,8 @@ import MongoModel from './MongoModel';
 
 interface CarDocument extends Car, Document { }
 
-// POR QUE QUE NÃO SE PODE PASSAR A INTERFACE JÁ PRONTA DE CAR?
-
 const carSchema = new Schema<CarDocument>({
-  // status?: Boolean,
+  status: Boolean,
   model: String,
   year: Number,
   color: String,
