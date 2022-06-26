@@ -7,6 +7,15 @@ export const createBodyMock = {
   doorsQty: 4,
 }
 
+export const wrongBodyMock = {
+  model: "Fiat Uno",
+  year: 2002,
+  color: "White",
+  buyValue: 10000,
+  seatsQty: 5,
+  doorsQty: 1,
+}
+
 export const createResultMock = {
   _id: "62b76ebdf8823499b8f9828c",
   model: "Fiat Uno",
