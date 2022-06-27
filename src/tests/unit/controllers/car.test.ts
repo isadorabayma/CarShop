@@ -2,117 +2,68 @@ import { expect } from 'chai';
 import { Request, Response } from 'express';
 import sinon from 'sinon';
 import CarController from '../../../controllers/Car';
-import { Model } from 'mongoose';
+import CarService from '../../../services/Car';
 import {
   createBodyMock,
-  wrongBodyMock,
   createResultMock,
   readResultMock,
 } from '../../mocks/car';
 
-const controllerInstance = new CarController();
-const res = {
-  status: () => {},
-  json: () => {},
-} as unknown as Response;
-
 describe('--- Car controller test ---', ()=>{
+  const serviceInstance = new CarService();
+  const controllerInstance = new CarController();
+
+  const req = {
+    body: {},
+    params: {},
+  } as any;
+
+  const res = {
+    status: sinon.stub().returns({ json: sinon.spy()}),
+    json: sinon.spy,
+  } as unknown as Response;
+
   describe('- Success cases -', ()=>{
     before(() => {
-      sinon.stub(Model, 'create').resolves(createResultMock)
-      // sinon.stub(Model, 'find').resolves(readResultMock)
-      // sinon.stub(Model, 'findOne').resolves(createResultMock)
-      // sinon.stub(Model, 'findByIdAndUpdate').resolves(createResultMock)
-      // sinon.stub(Model, 'findOneAndDelete').resolves(createResultMock)
-
-      sinon.stub(res, 'status').returns(res);
-      sinon.stub(res, 'json').returns(res);
+      sinon.stub(serviceInstance, 'create')
+      sinon.stub(serviceInstance, 'read')
+      sinon.stub(serviceInstance, 'readOne')
     })
   
     after(() => {
-      (Model.create as sinon.SinonStub).restore();
-      // (Model.find as sinon.SinonStub).restore();
-      // (Model.findOne as sinon.SinonStub).restore();
-      // (Model.findByIdAndUpdate as sinon.SinonStub).restore();
-      // (Model.findOneAndDelete as sinon.SinonStub).restore();
+      (serviceInstance.create as sinon.SinonStub).restore();
+      (serviceInstance.read as sinon.SinonStub).restore();
+      (serviceInstance.readOne as sinon.SinonStub).restore();
     })
     
     it('1. Create module returns the car created', async ()=>{
-      const req = {
-        body: createBodyMock,
-      } as unknown as Request;
-      
+      req.body = createBodyMock;
+      (serviceInstance.create  as sinon.SinonStub).resolves(createResultMock)
       await controllerInstance.create(req, res);
 
       expect((res.status as sinon.SinonStub).calledWith(201)).to.be.true;
       expect((res.json as sinon.SinonStub).calledWith(createResultMock))
       .to.be.true;  
+      // sinon.assert.calledWith(res.status, 201);
     })
   
-    // it('2. Read module returns all cars in the db', async ()=>{
-    //   const req = {} as unknown as Request;
-      
-    //   const result = await controllerInstance.read(req, res);
+    it('2. Read module returns all cars in the db', async ()=>{
+      (serviceInstance.read  as sinon.SinonStub).resolves(readResultMock)
+      await controllerInstance.read(req, res);
 
-    //   expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
-    //   // expect((res.json as sinon.SinonStub).calledWith(readResultMock))
-    //   // .to.be.true;        
-    // })
+      expect((res.status as sinon.SinonStub).called).to.be.true;
+      // expect((res.json as sinon.SinonStub).calledWith(readResultMock))
+      // .to.be.true;        
+    })
   
-    // it('3. ReadOne module returns a car in the db by id', async ()=>{
-    //   const req = {
-    //     params: { id: "62b76ebdf8823499b8f9828c" },
-    //   } as any;
+    it('3. ReadOne module returns a car in the db by id', async ()=>{
+      req.params = { id: "62b76ebdf8823499b8f9828c" };
       
-    //   await controllerInstance.readOne(req, res);
+      await controllerInstance.readOne(req, res);
 
-    //   expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
-    //   expect((res.json as sinon.SinonStub).calledWith(createResultMock))
-    //   .to.be.true;  
-    // })  
-    
-  //   it('4. Update module returns an updated car', async ()=>{
-  
-  //     const id =  "62b76ebdf8823499b8f9828c";
-  //     const result = await controllerInstance.update(id, createBodyMock);
-  //     expect(result).to.be.equal(createResultMock);  
-  //   })
-  
-  //   it('5. Delete module returns a cars in the db by id', async ()=>{
-  
-  //     const id =  "62b76ebdf8823499b8f9828c";
-  //     const result = await controllerInstance.delete(id);
-  //     expect(result).to.be.equal(createResultMock);  
-  //   })
+      expect((res.status as sinon.SinonStub).calledWith(200)).to.be.true;
+      expect((res.json as sinon.SinonStub).calledWith(createResultMock))
+      .to.be.true;  
+    })  
   })
-  // describe('- Fail cases -', ()=>{
-  //   before(() => {
-  //     sinon.stub(Model, 'create').resolves(createResultMock)
-  //     sinon.stub(Model, 'find').resolves(readResultMock)
-  //     sinon.stub(Model, 'findOne').resolves(createResultMock)
-  //     sinon.stub(Model, 'findByIdAndUpdate').resolves(createResultMock)
-  //     sinon.stub(Model, 'findOneAndDelete').resolves(createResultMock)
-  //   })
-  
-  //   after(() => {
-  //     (Model.create as sinon.SinonStub).restore();
-  //     (Model.find as sinon.SinonStub).restore();
-  //     (Model.findOne as sinon.SinonStub).restore();
-  //     (Model.findByIdAndUpdate as sinon.SinonStub).restore();
-  //     (Model.findOneAndDelete as sinon.SinonStub).restore();
-  //   })
-    
-  //   it('1. Create module returns the car created', async ()=>{
-  
-  //     const result = await controllerInstance.create(wrongBodyMock);
-  //     expect(result).to.have.property('error');  
-  //   })
-    
-  //   it('2. Update module returns an updated car', async ()=>{
-  
-  //     const id =  "62b76ebdf8823499b8f9828c";
-  //     const result = await controllerInstance.update(id, wrongBodyMock);
-  //     expect(result).to.have.property('error');  
-  //   })
-  // })
 })
