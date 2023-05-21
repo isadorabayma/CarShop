@@ -1,0 +1,36 @@
+import chai from "chai";
+import chaiHttp from 'chai-http';
+import { Model } from "mongoose";
+import Sinon from "sinon";
+import { createResultMock } from "../../mocks/car";
+// import index from '../../../index'
+// será que eu teria que passar o index ou o server no lugar do app?
+// import App from '../../../app'
+
+// const appInstance = new App();
+
+// const MONGO_DB_URL = 'mongodb://mongodb:27017/CarShop';
+const MONGO_DB_URL = 'mongodb://localhost:27017/CarShop';
+
+
+chai.use(chaiHttp);
+const { expect } = chai;
+
+describe('--- Car Controller test ---', () => {
+  let res;
+  describe('Success cases', () => {
+    // before(async () => {
+    before(() => {
+      Sinon.stub(Model, 'create').resolves(createResultMock);
+    });
+
+    after(() => {
+      (Model.create as Sinon.SinonStub).restore();
+    })
+
+    it('Create endpoint best path works', async () => {
+      res = await chai.request(MONGO_DB_URL).get('/car');
+      expect(res.status).to.be.equal(200);
+    })
+  })
+})
